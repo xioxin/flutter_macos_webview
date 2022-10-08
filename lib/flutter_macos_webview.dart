@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/services.dart';
@@ -91,28 +92,31 @@ class FlutterMacOSWebView {
     });
   }
 
-
   /// getAllCookies
-  Future<void> getAllCookies() async {
-    print('getAllCookies');
-    final cookies = await _channel.invokeMethod('getAllCookies');
-    print(cookies);
+  Future<List<Cookie>> getCookies([String? domain]) async {
+    var cookies = await _channel.invokeMethod('getAllCookies');
+    if (cookies is List) {
+      if (domain != null) {
+        cookies = cookies.where((e) => e['domain'] as String == domain).toList();
+      }
+      return cookies
+          .map((e) => Cookie(e['name'] as String, e['value'] as String))
+          .toList();
+    }
+    return <Cookie>[];
   }
 
   /// getUserAgent
-  Future<void> getUserAgent() async {
-    print('getUserAgent');
+  Future<String> getUserAgent() async {
     final ua = await _channel.invokeMethod('getUserAgent');
-    print(ua);
+    return ua as String;
   }
 
   /// clearCookies
-  Future<void> clearCookies() async {
-    print('clearCookies');
+  Future<bool> clearCookies() async {
     final ok = await _channel.invokeMethod('clearCookies');
-    print(ok);
+    return ok as bool;
   }
-
 
   /// Closes WebView
   Future<void> close() async {

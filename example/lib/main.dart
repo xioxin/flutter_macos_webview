@@ -9,13 +9,13 @@ class App extends StatelessWidget {
     webview = FlutterMacOSWebView(
       onOpen: () => print('Opened'),
       onClose: () => print('Closed'),
-      onPageStarted: (url) {
+      onPageStarted: (url) async {
         print('Page started: $url');
-        webview?.getAllCookies();
+        print( await webview?.getCookies('.google.com'));
       },
-      onPageFinished: (url) {
+      onPageFinished: (url) async {
         print('Page finished: $url');
-        webview?.getAllCookies();
+        print( await webview?.getCookies('.google.com'));
       },
       onWebResourceError: (err) {
         print(
@@ -24,12 +24,14 @@ class App extends StatelessWidget {
       },
     );
 
-    await webview?.clearCookies();
+    print('clearCookies: ');
+    print(await webview?.clearCookies());
 
-    await webview?.getUserAgent();
+    print('getUserAgent: ');
+    print(await webview?.getUserAgent());
 
     await webview?.open(
-      url: 'https://flutter.dev/',
+      url: 'https://google.com/',
       presentationStyle: presentationStyle,
       size: Size(400.0, 400.0),
     );

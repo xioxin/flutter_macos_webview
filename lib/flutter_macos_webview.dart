@@ -91,6 +91,29 @@ class FlutterMacOSWebView {
     });
   }
 
+
+  /// getAllCookies
+  Future<void> getAllCookies() async {
+    print('getAllCookies');
+    final cookies = await _channel.invokeMethod('getAllCookies');
+    print(cookies);
+  }
+
+  /// getUserAgent
+  Future<void> getUserAgent() async {
+    print('getUserAgent');
+    final ua = await _channel.invokeMethod('getUserAgent');
+    print(ua);
+  }
+
+  /// clearCookies
+  Future<void> clearCookies() async {
+    print('clearCookies');
+    final ok = await _channel.invokeMethod('clearCookies');
+    print(ok);
+  }
+
+
   /// Closes WebView
   Future<void> close() async {
     await _channel.invokeMethod('close');

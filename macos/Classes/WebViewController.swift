@@ -17,7 +17,7 @@ class WebViewController: NSViewController {
     
     static let closeNotification = Notification.Name("WebViewCloseNotification")
     
-    private let webview: WKWebView
+    public let webview: WKWebView
     
     private let frame: CGRect
     private let channel: FlutterMethodChannel

@@ -4,12 +4,19 @@ import 'package:flutter_macos_webview/flutter_macos_webview.dart';
 void main() => runApp(App());
 
 class App extends StatelessWidget {
+  FlutterMacOSWebView? webview;
   Future<void> _onOpenPressed(PresentationStyle presentationStyle) async {
-    final webview = FlutterMacOSWebView(
+    webview = FlutterMacOSWebView(
       onOpen: () => print('Opened'),
       onClose: () => print('Closed'),
-      onPageStarted: (url) => print('Page started: $url'),
-      onPageFinished: (url) => print('Page finished: $url'),
+      onPageStarted: (url) {
+        print('Page started: $url');
+        webview?.getAllCookies();
+      },
+      onPageFinished: (url) {
+        print('Page finished: $url');
+        webview?.getAllCookies();
+      },
       onWebResourceError: (err) {
         print(
           'Error: ${err.errorCode}, ${err.errorType}, ${err.domain}, ${err.description}',
@@ -17,12 +24,14 @@ class App extends StatelessWidget {
       },
     );
 
-    await webview.open(
-      url: 'https://google.com',
+    await webview?.clearCookies();
+
+    await webview?.getUserAgent();
+
+    await webview?.open(
+      url: 'https://flutter.dev/',
       presentationStyle: presentationStyle,
       size: Size(400.0, 400.0),
-      userAgent:
-          'Mozilla/5.0 (iPhone; CPU iPhone OS 14_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0 Mobile/15E148 Safari/604.1',
     );
 
     // await Future.delayed(Duration(seconds: 5));

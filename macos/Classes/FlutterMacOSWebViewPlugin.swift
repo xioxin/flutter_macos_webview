@@ -33,6 +33,12 @@ public class FlutterMacOSWebViewPlugin: NSObject, FlutterPlugin {
             open(call: call, result: result)
         } else if call.method == "close" {
             close(self, result: result)
+        } else if call.method == "getAllCookies" {
+            getAllCookies(result)
+        } else if call.method == "clearCookies" {
+            clearCookies(result)
+        } else if call.method == "getUserAgent" {
+            result(WKWebView().value(forKey: "userAgent"))
         } else {
             result(FlutterMethodNotImplemented)
         }
@@ -134,6 +140,36 @@ public class FlutterMacOSWebViewPlugin: NSObject, FlutterPlugin {
         result(nil)
     }
     
+
+    @objc private func getAllCookies(_ result: @escaping FlutterResult) {
+        var cookieList = [[String: String]]()
+        WKWebsiteDataStore.default().httpCookieStore.getAllCookies { cookies in
+            for cookie in cookies {
+                cookieList.append([
+                    "name": cookie.name,
+                    "value": cookie.value,
+                    "domain": cookie.domain,
+                ]);
+            }
+            DispatchQueue.main.async {
+                result(cookieList)
+            }
+        }
+    }
+    
+    @objc private func clearCookies(_ result: @escaping FlutterResult) {
+        HTTPCookieStorage.shared.removeCookies(since: Date.distantPast)
+        WKWebsiteDataStore.default().fetchDataRecords(ofTypes: WKWebsiteDataStore.allWebsiteDataTypes()) { records in
+          WKWebsiteDataStore.default().removeData(ofTypes: WKWebsiteDataStore.allWebsiteDataTypes(), for: records, completionHandler: {
+              DispatchQueue.main.async {
+                  result(true)
+              }
+          })
+        }
+    }
+
+
+
     @objc private func close(_ sender: Any?) {
         guard
             let webViewCtrl = webViewController,
